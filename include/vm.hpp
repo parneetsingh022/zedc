@@ -19,6 +19,7 @@ class VM {
         void push(int32_t value); // push 32-bit integer onto the stack
         int32_t pop(); // pop 32-bit integer from the stack
         uint8_t fetch(); // fetch next byte from code
+        std::vector<int32_t> storage; // Storage for local variables
     private:
         // Vector to hold native functions
         std::vector<NativeFn> native_functions;

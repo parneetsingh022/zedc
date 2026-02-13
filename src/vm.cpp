@@ -24,12 +24,59 @@ void VM::execute(const uint8_t* code) {
                 push(value); // Push the integer onto the stack
                 break;
             }
+            case BIPUSH: {
+                // Read 1 byte for the integer
+                int8_t value = static_cast<int8_t>(fetch());
+                push(static_cast<int32_t>(value)); // Push the integer onto the stack
+                break;
+            }
+
+            case IPOP: {
+                pop(); // Pop the top value from the stack and discard it
+                break;
+            }
+  
             case IADD: {
                 int32_t b = pop(); // Pop top value
                 int32_t a = pop(); // Pop next value
                 push(a + b); // Push the result of addition back onto the stack
                 break;
             }
+
+            case ISUB: {
+                int32_t b = pop(); // Pop top value
+                int32_t a = pop(); // Pop next value
+                push(a - b); // Push the result of subtraction back onto the stack
+                break;
+            }
+
+            case IMUL: {
+                int32_t b = pop(); // Pop top value
+                int32_t a = pop(); // Pop next value
+                push(a * b); // Push the result of multiplication back onto the stack
+                break;
+            }
+
+            case IDIV: {
+                int32_t b = pop(); // Pop top value
+                int32_t a = pop(); // Pop next value
+                if (b == 0) {
+                    throw std::runtime_error("Division by zero"); // Check for division by zero
+                }
+                push(a / b); // Push the result of division back onto the stack
+                break;
+            }
+
+            case IMOD: {
+                int32_t b = pop(); // Pop top value
+                int32_t a = pop(); // Pop next value
+                if (b == 0) {
+                    throw std::runtime_error("Division by zero"); // Check for division by zero
+                }
+                push(a % b); // Push the result of modulus back onto the stack
+                break;
+            }
+
             case CALL_NATIVE: {
                 // 1. Fetch the index of the native function from the bytecode
                 uint8_t native_index = fetch(); 
@@ -43,6 +90,52 @@ void VM::execute(const uint8_t* code) {
                 }
                 break;
             }
+
+            case SWP : {
+                int32_t a = pop(); // Pop top value
+                int32_t b = pop(); // Pop next value
+                push(a); // Push the first popped value back onto the stack
+                push(b); // Push the second popped value back onto the stack
+                break;
+            }
+
+            case DUP : {
+                int32_t a = pop(); // Pop top value
+                push(a); // Push it back onto the stack
+                push(a); // Push it again to duplicate
+                break;
+            }
+
+
+            case ISTORE: {
+                // 1. Fetch two bytes to create a 16-bit index (Big Endian)
+                uint16_t index = (static_cast<uint16_t>(fetch()) << 8) | fetch(); 
+                int32_t value = pop();
+
+                // 2. Dynamic Resize: If the index is new, expand the closet
+                if (index >= storage.size()) {
+                    storage.resize(index + 1, 0); // Initialize new slots with 0
+                }
+                
+                storage[index] = value;
+                break;
+            }
+
+            case ILOAD: {
+                // 1. Must also fetch two bytes to match ISTORE
+                uint16_t index = (static_cast<uint16_t>(fetch()) << 8) | fetch(); 
+
+                // 2. Safety Check: Since storage is dynamic, we check if it exists
+                if (index < storage.size()) {
+                    push(storage[index]);
+                } else {
+                    // If they try to load a variable that was never stored, 
+                    // we can either throw an error or just push 0.
+                    throw std::runtime_error("Accessing uninitialized local variable");
+                }
+                break;
+            }
+
             case HALT:
                 return; // Stop execution
             default:

@@ -10,13 +10,25 @@ extern "C" void stdPrintChar(VM* vm);
 
 int main(){
     uint8_t code[] = {
-        IPUSH, 0x00, 0x00, 0x00, 0x05, // Push 5
-        IPUSH, 0x00, 0x00, 0x00, 0x03, // Push 3
-        IADD,                          // Add top two values
-        CALL_NATIVE, 0x00,             // Call the first native function (stdPrintInteger)
-        IPUSH, 0x00, 0x00, 0x00, 0x0a, // Push 10 (ASCII for newline)
-        CALL_NATIVE, 0x01,             // Call the second native function (stdPrintChar)
-        HALT                           // Stop execution
+        BIPUSH, 72,
+        BIPUSH, 101,
+        SWP,
+        DUP,
+
+        CALL_NATIVE, 0,
+        BIPUSH, 0xa,
+        CALL_NATIVE, 1,
+
+        CALL_NATIVE, 0,
+        BIPUSH, 0xa,
+        CALL_NATIVE, 1,
+
+        CALL_NATIVE, 0,
+        BIPUSH, 0xa,
+        CALL_NATIVE, 1,
+
+        HALT
+    
     };
 
     VM vm; // Create an instance of the virtual machine
