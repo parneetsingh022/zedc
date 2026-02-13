@@ -1,0 +1,3 @@
+/Users/admin/Desktop/Workspace/Projects/zedc/build/CMakeFiles/zedc.dir
+/Users/admin/Desktop/Workspace/Projects/zedc/build/CMakeFiles/edit_cache.dir
+/Users/admin/Desktop/Workspace/Projects/zedc/build/CMakeFiles/rebuild_cache.dir
