@@ -40,4 +40,7 @@
 # debug information files
 *.dwo
 
+# Ignore the build folder
 build/
+.DS_Store
+*.o
